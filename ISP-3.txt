@@ -1,0 +1,111 @@
+Current configuration : 1666 bytes
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname ISP-3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+
+ip cef
+no ipv6 cef
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ ip address 172.16.3.1 255.255.255.0
+!
+interface Ethernet0/1
+ ip address 172.16.4.1 255.255.255.0
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+!
+interface Ethernet0/3
+ ip address 192.168.200.1 255.255.255.0
+!
+router bgp 65004
+ bgp log-neighbor-changes
+ bgp graceful-restart restart-time 120
+ bgp graceful-restart stalepath-time 360
+ bgp graceful-restart
+ bgp dampening
+ network 172.16.3.0 mask 255.255.255.0
+ network 172.16.4.0 mask 255.255.255.0
+ network 192.168.10.0 mask 255.255.255.128
+ network 192.168.200.0
+ neighbor 172.16.3.2 remote-as 65002
+ neighbor 172.16.3.2 description eBGP_AS65002
+ neighbor 172.16.3.2 timers 3 10
+ neighbor 172.16.3.2 fall-over bfd
+ neighbor 172.16.3.2 next-hop-self
+ neighbor 172.16.3.2 advertisement-interval 1
+ neighbor 172.16.3.2 soft-reconfiguration inbound
+ neighbor 172.16.3.2 maximum-prefix 5000 80 warning-only
+ neighbor 172.16.4.2 remote-as 65003
+ neighbor 172.16.4.2 description eBGP_AS65003
+ neighbor 172.16.4.2 timers 3 10
+ neighbor 172.16.4.2 fall-over bfd
+ neighbor 172.16.4.2 next-hop-self
+ neighbor 172.16.4.2 advertisement-interval 1
+ neighbor 172.16.4.2 soft-reconfiguration inbound
+ neighbor 172.16.4.2 maximum-prefix 5000 80 warning-only
+ maximum-paths 2
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+!
+!
+!
+end

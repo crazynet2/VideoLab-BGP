@@ -1,0 +1,106 @@
+Current configuration : 1246 bytes
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname Ent-1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+
+ip cef
+no ipv6 cef
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+track 1 ip sla 1 reachability
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ ip address 172.16.1.2 255.255.255.0
+!
+interface Ethernet0/1
+ ip address 192.168.10.129 255.255.255.252
+ shutdown
+!
+interface Ethernet0/2
+ ip address 192.168.10.1 255.255.255.128
+ standby version 2
+ standby 1 ip 192.168.10.3
+ standby 1 timers msec 300 msec 900
+ standby 1 priority 110
+ standby 1 preempt
+ standby 1 name HSRP_Group_1
+ standby 1 track 1 decrement 20
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+router bgp 65001
+ bgp log-neighbor-changes
+ network 192.168.10.0
+ network 192.168.10.0 mask 255.255.255.128
+ neighbor 172.16.1.1 remote-as 65002
+ neighbor 172.16.1.1 description eBGP_Remoe_AS65002
+ neighbor 192.168.10.130 remote-as 65001
+ maximum-paths 2
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+!
+ip sla 1
+ icmp-echo 8.8.8.8
+ threshold 500
+ip sla schedule 1 life forever start-time now
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+!
+!
+!
+end

@@ -1,0 +1,110 @@
+Current configuration : 1439 bytes
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname Ent-2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+!
+!
+!
+
+ip cef
+no ipv6 cef
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+track 1 ip sla 1 reachability
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ ip address 172.16.2.2 255.255.255.0
+!
+interface Ethernet0/1
+ ip address 192.168.10.130 255.255.255.252
+!
+interface Ethernet0/2
+ ip address 192.168.10.2 255.255.255.128
+ standby version 2
+ standby 1 ip 192.168.10.3
+ standby 1 timers msec 300 msec 900
+ standby 1 preempt
+ standby 1 name HSRP_Group_1
+ standby 1 track 1 decrement 10
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+router bgp 65001
+ bgp log-neighbor-changes
+ network 192.168.10.0
+ network 192.168.10.0 mask 255.255.255.128
+ neighbor 172.16.2.1 remote-as 65003
+ neighbor 172.16.2.1 description eBGP_Remote_AS65003
+ neighbor 192.168.10.129 remote-as 65001
+ neighbor 192.168.10.129 description iBGP_Remote_AS65001
+ neighbor 192.168.10.129 next-hop-self
+ neighbor 192.168.10.129 route-map PREPEND_ROUTES out
+ maximum-paths 2
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+!
+ip sla 1
+ icmp-echo 8.8.8.8
+ threshold 500
+ip sla schedule 1 life forever start-time now
+!
+route-map PREPEND_ROUTES permit 10
+ set as-path prepend 65001 65001 65001
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+!
+!
+!
+end
